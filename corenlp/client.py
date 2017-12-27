@@ -113,7 +113,7 @@ class CoreNLPClient(RobustService):
     """
     A CoreNLP client to the Stanford CoreNLP server.
     """
-    DEFAULT_ANNOTATORS = "tokenize ssplit lemma pos ner depparse".split()
+    DEFAULT_ANNOTATORS = "tokenize ssplit pos ner depparse".split()
     DEFAULT_PROPERTIES = {}
 
     def __init__(self, start_server=True, endpoint="http://localhost:9000", timeout=5000, annotators=DEFAULT_ANNOTATORS, properties=DEFAULT_PROPERTIES):
@@ -122,8 +122,9 @@ class CoreNLPClient(RobustService):
             assert host == "localhost", "If starting a server, endpoint must be localhost"
 
             assert os.getenv("CORENLP_HOME") is not None, "Please define $CORENLP_HOME where your CoreNLP Java checkout is"
-            start_cmd = "java -cp '{corenlp_home}/*'  edu.stanford.nlp.pipeline.StanfordCoreNLPServer -port {port} -timeout {timeout}".format(
-                corenlp_home=os.getenv("CORENLP_HOME"),
+            start_cmd = 'java -Xmx{memory}g -cp "{javanlp}/*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer -serverProperties StanfordCoreNLP-chinese.properties -port {port} -timeout {timeout}'.format(
+                memory=allocate_mem,
+                javanlp=os.getenv("JAVANLP_HOME"),
                 port=port,
                 timeout=timeout)
             stop_cmd = None
